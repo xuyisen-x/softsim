@@ -1,0 +1,9 @@
+[project]
+name = "softsim"
+version = "0.1.0"
+description = "A research hardware simulator"
+requires-python = ">=3.12"
+dependencies = [
+    "invoke>=3.0.0",
+    "termcolor>=3.3.0",
+]

@@ -1,0 +1,35 @@
+Checks: >
+  -*,
+  readability-identifier-naming,
+  misc-const-correctness,
+  readability-non-const-parameter,
+  performance-unnecessary-copy-initialization,
+  performance-unnecessary-value-param,
+  performance-for-range-copy,
+  performance-move-const-arg,
+  modernize-use-override,
+  modernize-use-nullptr,
+  modernize-loop-convert,
+  bugprone-use-after-move,
+  cppcoreguidelines-pro-type-member-init
+
+CheckOptions:
+  # 类名：大写开头 (CamelCase)
+  - key:             readability-identifier-naming.ClassCase
+    value:           CamelCase
+  
+  # 函数名：小写驼峰 (camelBack)
+  - key:             readability-identifier-naming.FunctionCase
+    value:           camelBack
+
+  # 局部变量：小写加下划线 (lower_case)
+  - key:             readability-identifier-naming.VariableCase
+    value:           lower_case
+
+  # 结构体字段：下划线结尾 (符合某些团队规范)
+  - key:             readability-identifier-naming.StructMemberCase
+    value:           lower_case
+
+  # 常量：全大写加下划线 (UPPER_CASE)
+  - key:   readability-identifier-naming.GlobalConstantCase
+    value: UPPER_CASE

@@ -1,0 +1,9 @@
+/build/
+/.vscode-build/
+/.vscode/
+/ext/
+/.ext/
+/output/
+/.venv/
+__pycache__/
+*.py[cod]
