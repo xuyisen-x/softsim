@@ -33,6 +33,9 @@ FetchContent_Declare(
   SOURCE_DIR     ${CMAKE_CURRENT_SOURCE_DIR}/ext/fmt
 )
 FetchContent_MakeAvailable(fmt)
+set_target_properties(fmt PROPERTIES
+  POSITION_INDEPENDENT_CODE ON
+)
 message("Done configuring fmt.")
 
 # yaml-cpp, dependency of ramulator2
