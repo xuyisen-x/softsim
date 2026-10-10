@@ -1,139 +1,18 @@
 # AGENTS.md
 
-## Project overview
+SoftSim 是一个主要使用 C++23 编写的研究型硬件模拟器。主要用于一个脑模拟专用硬件的软件模拟器。
 
-SoftSim is a research hardware simulator written primarily in C++.
+## 文档入口
 
-- Use C++23 for all project C++ targets.
-- The top-level `CMakeLists.txt` owns project-wide configuration, third-party dependencies, and module integration.
-- Each directory under `modules/` owns its targets in a local `CMakeLists.txt`.
-- Add new modules to the top-level build with `add_subdirectory(modules/<module>)`.
-- Third-party sources populated by CMake live under `ext/`; do not edit them for project fixes.
+- [开发指南](docs/development.md)：目录结构、工具要求、构建与 Invoke、CMake 约束、编辑器配置和验证流程。修改构建配置或任务前先阅读该文档。
+- [RamulatorWrapper](docs/ramulator_wrapper.md)：内存模块的配置、接口、回调及并发约定。修改内存模块前先阅读该文档。
 
-## Required tools
+## 编辑与文档约定
 
-- CMake 3.20 or newer
-- A compiler with C++23 support
-- Ninja
-- uv
-- Python 3.12 or newer
-
-Python dependencies are declared in `pyproject.toml` and locked in `uv.lock`. Use `uv run` instead of invoking the project environment's Python or Invoke executable directly.
-
-## Canonical build and run commands
-
-Use the Invoke tasks as the normal development interface:
-
-```bash
-# List available tasks
-uv run invoke --list
-
-# Release build
-uv run invoke build.hello
-
-# Debug build
-uv run invoke build.hello --debug
-
-# Clean build
-uv run invoke build.hello --clean
-
-# Verbose clean Debug build
-uv run invoke build.hello --clean --debug --verbose
-
-# Run an already-built target
-uv run invoke run.hello
-
-# Remove all C++ build artifacts
-uv run invoke build.clean
-```
-
-When changing build behavior, keep Invoke as a thin wrapper around CMake. Compiler selection, compile options, linking, output directories, and platform/toolchain configuration belong in CMake rather than `tasks/build.py`.
-
-## Invoke task organization
-
-- `tasks/build.py` configures CMake and builds named targets.
-- `tasks/run.py` runs previously built executables.
-- `tasks/_utils.py` contains shared paths, messages, and binary-link creation.
-- `tasks/__init__.py` registers the `build` and `run` task collections.
-
-For a new executable target, reuse `build_cpp(...)` and `run_cpp(...)` and add matching tasks to `tasks/build.py` and `tasks/run.py`.
-
-## Build outputs
-
-Invoke uses this layout:
-
-```text
-output/
-├── cpp_build/          # CMake/Ninja build tree
-│   ├── bin/            # CMake executable outputs
-│   └── lib/            # CMake library outputs
-└── bin/                # Stable links created by Invoke
-```
-
-For `hello`:
-
-- CMake output: `output/cpp_build/bin/hello`
-- Stable Invoke link: `output/bin/hello`
-
-The `output/`, `.venv/`, `.vscode-build/`, and `ext/` directories are generated or external content and must not be committed.
-
-## Direct CMake equivalents
-
-Use these only when diagnosing below the Invoke layer:
-
-```bash
-cmake -S . -B output/cpp_build -G Ninja \
-  -DCMAKE_BUILD_TYPE=Release
-cmake --build output/cpp_build --target hello
-./output/cpp_build/bin/hello
-```
-
-A direct CMake build does not create the stable `output/bin/<target>` link; `tasks/build.py` does that after a successful build.
-
-## CMake requirements and constraints
-
-The top-level configuration enforces:
-
-```cmake
-set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-```
-
-Release builds enable CMake interprocedural optimization (LTO). Project targets use `-Wall -Wextra`.
-
-The project currently does not use C++ named modules, so the top-level CMake configuration must retain:
-
-```cmake
-set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
-```
-
-Without it, newer CMake/Ninja versions may run Homebrew `clang-scan-deps` for third-party C++23 targets. On macOS this previously failed while scanning yaml-cpp with `fatal error: 'time.h' file not found`. Remove this setting only when named modules are intentionally introduced and the module-scanning toolchain is configured and tested.
-
-## VS Code and clangd
-
-The editor build is separate from the Invoke build:
-
-- Invoke builds in `output/cpp_build`.
-- VS Code CMake Tools builds in `.vscode-build`.
-- `.vscode/settings.json` enables `CMAKE_EXPORT_COMPILE_COMMANDS` for the editor build.
-- `.clangd` reads `.vscode-build/compile_commands.json`.
-
-`uv run invoke build.hello` does not refresh the editor compilation database. After changing CMake targets or compile settings, run `CMake: Configure` in VS Code and restart clangd if its diagnostics remain stale.
-
-## Verification expectations
-
-After changing CMake or build tasks, verify with:
-
-```bash
-uv run invoke build.hello --clean
-uv run invoke run.hello
-```
-
-The expected program output is:
-
-```text
-Hello World
-```
-
-If a clean full build is unnecessarily expensive for a narrow source-only change, an incremental `uv run invoke build.hello` is acceptable, but report which validation was performed.
+- 遵循 `.clang-format` 和周围代码风格，避免无关的格式修改。
+- 注释保持简洁，重点解释时序、所有权或不直观的行为。
+- 保留用户修改，包括已暂存的内容；不要重置文件或重写无关模块。
+- 修改公开接口、配置格式或回调行为时，同步更新 `docs/` 中对应的模块文档，不在模块目录中维护重复的 README。
+- `hello` 是可临时用于任何事情的目标，用途和行为随时可能变化。不要在 `docs/` 中记录它的用法、行为或预期输出，也不要让其他目标、示例或验证流程依赖它。
+- 用户偏好函数式编程，std::ranges和算法库，偏好使用std::ranges::to直接构建vector或其他容器
+- `AGENTS.md` 只维护项目概况、文档入口和编辑与文档约定；开发规则、模块约束、操作步骤和示例统一放在 `docs/`。

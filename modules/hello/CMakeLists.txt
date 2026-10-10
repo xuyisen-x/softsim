@@ -1,5 +1,5 @@
 add_executable(hello main.cpp)
 
 target_link_libraries(hello PRIVATE
-  ramulator
+  ram_wrapper
 )

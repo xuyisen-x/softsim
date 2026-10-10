@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.25)
 project(softsim LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
@@ -70,6 +70,7 @@ target_compile_options(
 )
 set_target_properties(ramulator PROPERTIES
   LIBRARY_OUTPUT_DIRECTORY  ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+  SYSTEM TRUE
 )
 message("Done configuring ramulator2.")
 
@@ -79,4 +80,5 @@ message("Done configuring ramulator2.")
 
 add_compile_options(-Wall -Wextra)
 
+add_subdirectory(modules/memory)
 add_subdirectory(modules/hello)

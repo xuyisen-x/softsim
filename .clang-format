@@ -6,7 +6,7 @@ IndentCaseLabels: true
 BreakBeforeBraces: Attach
 ColumnLimit: 120
 AllowShortIfStatementsOnASingleLine: WithoutElse
-AllowShortLambdasOnASingleLine: None
+AllowShortLambdasOnASingleLine: Inline
 AlignAfterOpenBracket: BlockIndent
 BreakAfterReturnType: None
 PenaltyReturnTypeOnItsOwnLine: 1000000
