@@ -28,7 +28,7 @@ void runPhase(RamulatorWrapper &memory, RequestType type) {
     const std::uint64_t start = 0x1003; // 覆盖非对齐首部和尾部。
     const auto size = static_cast<std::uint64_t>(tx_bytes) * 256 + 7;
 
-    std::vector<ChannelWork> work =                             //
+    std::vector<ChannelWork> work = std::ranges::to<std::vector<ChannelWork>>(
         std::views::iota(std::size_t{0}, memory.channelCount()) //
         | std::views::transform([=, &memory](std::size_t channel) {
               ChannelWork state;
@@ -42,7 +42,7 @@ void runPhase(RamulatorWrapper &memory, RequestType type) {
               state.finished.resize(state.requests.size(), false);
               return state;
           }) //
-        | std::ranges::to<std::vector>();
+    );
 
     const std::size_t total = std::ranges::fold_left(
         work | std::views::transform([](const auto &state) { return state.requests.size(); }), //

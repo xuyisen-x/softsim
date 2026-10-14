@@ -60,9 +60,9 @@ struct RamulatorWrapper::Impl {
             channel.memory->connect_frontend(channel.frontend.get());
             return channel;
         };
-        channels = std::views::iota(0, channel_count)      //
-                   | std::views::transform(create_channel) //
-                   | std::ranges::to<std::vector<Channel>>();
+        channels = std::ranges::to<std::vector<Channel>>(
+            std::views::iota(0, channel_count) | std::views::transform(create_channel)
+        );
 
         // All instances share the same channel configuration.
         channel_info = {
